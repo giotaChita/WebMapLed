@@ -1,0 +1,14 @@
+{
+  "name": "qgis2web_2024_04_02-13_07_15_415150_TESFILE_OPENLAYER",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
