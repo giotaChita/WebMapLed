@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="./resources/ol.css">
+    <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+    <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+    <link rel="stylesheet" href="./resources/qgis2web.css">
+    <style>
+      .search-layer {
+        top: 135px;
+        left: .5em;
+      }
+      .ol-touch .search-layer {
+        top: 180px;
+      }
+      </style>
+              <style>
+              html, body {
+                  background-color: #ffffff;
+              }
+              .ol-control button {
+                  background-color: #f8f8f8 !important;
+                  color: #000000 !important;
+                  border-radius: 0px !important;
+              }
+              .ol-zoom, .geolocate, .gcd-gl-control .ol-control {
+                  background-color: rgba(255,255,255,.4) !important;
+                  padding: 3px !important;
+              }
+              .ol-scale-line {
+                  background: none !important;
+              }
+              .ol-scale-line-inner {
+                  border: 2px solid #f8f8f8 !important;
+                  border-top: none !important;
+                  background: rgba(255, 255, 255, 0.5) !important;
+                  color: black !important;
+              }
+      
+              .hover-coordinates {
+                  position: absolute;
+                  background-color: rgba(255, 255, 255, 0.7);
+                  padding: 5px;
+                  border: 1px solid #ccc;
+                  border-radius: 3px;
+              }
+              </style>
+      
+              <style>
+              .geolocate {
+                  top: 65px;
+                  left: .5em;
+              }
+              .ol-touch .geolocate {
+                  top: 80px;
+              }
+              </style>
+      <style>
+      .tooltip {
+        position: relative;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        color: white;
+        padding: 4px 8px;
+        opacity: 0.7;
+        white-space: nowrap;
+      }
+      .tooltip-measure {
+        opacity: 1;
+        font-weight: bold;
+      }
+      .tooltip-static {
+        background-color: #ffcc33;
+        color: black;
+        border: 1px solid white;
+      }
+      .tooltip-measure:before,
+      .tooltip-static:before {
+        border-top: 6px solid rgba(0, 0, 0, 0.5);
+        border-right: 6px solid transparent;
+        border-left: 6px solid transparent;
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        margin-left: -7px;
+        left: 50%;
+      }
+      .tooltip-static:before {
+        border-top-color: #ffcc33;
+      }
+      .measure-control {
+        top: 100px;
+        left: .5em;
+        display: flex;
+      }
+      .ol-touch .measure-control {
+        top: 130px;
+      }
+      .measure-control label {
+        padding: 1px;
+        padding-right: 4px;
+      }
+      </style>
+              <style>
+              html, body, #map {
+                  width: 100%;
+                  height: 100%;
+                  padding: 0;
+                  margin: 0;
+              }
+              </style>
+              <title></title>
+</head>
+<body>
+    <!-- Sign-in form -->
+    <div id="sign-in-form" class="sign-in-form">
+        <form id="login-form">
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required />
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <input type="submit" value="Sign in" />
+        </form>
+        <div id="error-message" class="error-message" style="display: none;">Invalid credentials</div>
+    </div>
+
+    <!-- Map container initially hidden -->
+    <div id="map" style="display: none;">
+        <div id="popup" class="ol-popup">
+            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div id="popup-content"></div>
+            <div id="coordinates" class="popup-coordinates"></div>
+        </div>
+            <!-- Hover coordinates element -->
+    <div id="hover-coordinates" class="hover-coordinates"></div>
+    
+    <!-- Add Marker button -->
+    <div id="markerButton" class="ol-unselectable ol-control custom-control">
+        <button id="addMarkerButton" class="custom-button">
+            <img src="resources/led_icon.png" alt="Add Marker">
+        </button>
+    </div>
+    </div>
+
+
+
+    <!-- Include your scripts here -->
+    <script src="resources/qgis2web_expressions.js"></script>
+    <script src="resources/polyfills.js"></script>
+    <script src="./resources/functions.js"></script>
+    <script src="./resources/ol.js"></script>
+    <script src="./resources/ol-layerswitcher.js"></script>
+    <script src="layers/TestFile_1.js"></script>
+    <script src="styles/TestFile_1_style.js"></script>
+    <script src="./layers/layers.js" type="text/javascript"></script> 
+    <script src="./resources/Autolinker.min.js"></script>
+    <script src="./resources/qgis2web.js"></script>
+    <script src="./resources/addMarker.js"></script>
+    <script src="excelMarker.js"></script>
+
+    <!-- Script to handle authentication -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const signinForm = document.getElementById('sign-in-form');
+            const mapContainer = document.getElementById('map');
+            const loginForm = document.getElementById('login-form');
+            const errorMessage = document.getElementById('error-message');
+
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent form submission
+
+                // Perform authentication (replace this with your authentication logic)
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                // Example authentication (replace this with your actual authentication logic)
+                if (username === 'hi' && password === 'hi') {
+                    // Successful authentication, hide sign-in form and show map
+                    signinForm.style.display = 'none';
+                    errorMessage.style.display = 'none';
+                    mapContainer.style.display = 'block';
+                    // Initialize the map here
+                    initializeMap();
+                } else {
+                    // Show error message for incorrect credentials
+                    errorMessage.style.display = 'block';
+                }
+            });
+        });
+    </script>
+
+<!-- Script to initialize the map and other elements -->
+<script>
+  function initializeMap() {
+      // Show the map container
+      document.getElementById('map-container').style.display = 'block';
+
+      // Initialize your map code here
+      var map = new ol.Map({
+          target: 'map',
+          layers: [
+              // Add your layers here
+          ],
+          view: new ol.View({
+              // Set your initial view settings here
+              center: ol.proj.fromLonLat([0, 0]),
+              zoom: 2
+          })
+      });
+
+      // Add any additional map interactions or controls here
+      // For example:
+      map.addControl(new ol.control.Zoom());
+      map.addControl(new ol.control.FullScreen());
+
+      // Add event listeners or any other customizations as needed
+      var hoverCoordinates = document.getElementById('hover-coordinates');
+      map.on('pointermove', function(event) {
+          var coord = ol.proj.toLonLat(event.coordinate);
+          hoverCoordinates.innerHTML = 'Longitude: ' + coord[0].toFixed(4) + '<br>Latitude: ' + coord[1].toFixed(4);
+          hoverCoordinates.style.left = '10px';
+          hoverCoordinates.style.bottom = '10px'; 
+          hoverCoordinates.style.display = 'block';
+      });
+
+      map.on('pointerleave', function() {
+          hoverCoordinates.style.display = 'none';
+      });
+  }
+</script>
+</body>
+</html>
